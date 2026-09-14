@@ -30,18 +30,85 @@
         body { 
             background: var(--bg); 
             color: var(--text); 
-            padding: 12px; 
-            padding-top: max(12px, var(--safe-top));
-            padding-bottom: max(12px, var(--safe-bottom));
-            max-width: 500px; 
-            margin: 0 auto; 
-            overflow-y: auto;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
             -webkit-touch-callout: none;
             -webkit-tap-highlight-color: transparent;
         }
-        
-        .header { text-align: center; margin-bottom: 16px; }
-        .header h1 { font-size: 1.5rem; font-weight: 700; color: var(--accent); letter-spacing: 2px; }
+
+        .header {
+            text-align: center;
+            padding: 12px 12px 8px 12px;
+            padding-top: max(12px, var(--safe-top));
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header h1 { 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            color: var(--accent); 
+            letter-spacing: 2px;
+            margin-bottom: 4px;
+        }
+
+        .today { 
+            font-size: 0.75rem; 
+            color: var(--text-muted); 
+        }
+
+        .period-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 6px;
+            font-size: 0.7rem;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: background 0.3s;
+        }
+
+        .dot.active { background: var(--accent); }
+
+        .container {
+            display: flex;
+            width: 100%;
+            height: calc(100vh - var(--safe-top) - var(--safe-bottom));
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .period {
+            flex: 0 0 100%;
+            width: 100%;
+            overflow-y: auto;
+            scroll-snap-align: start;
+            padding: 12px;
+            padding-bottom: max(12px, var(--safe-bottom));
+        }
+
+        .period-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
+        }
 
         .dashboard {
             display: grid;
@@ -189,49 +256,104 @@
 </head>
 <body>
 
-    <div class="install-banner" id="install-banner">
-        📱 Ana ekrana ekle: Safari Paylaş → Ekle
-    </div>
-
     <div class="header">
         <h1>HMC</h1>
-    </div>
-
-    <!-- Özet Paneli -->
-    <div class="dashboard">
-        <div class="dash-card full">
-            <label>Günlük Limit</label>
-            <div class="value" id="daily-limit">₺0,00</div>
-            <small style="font-size: 0.65rem; opacity: 0.8;" id="days-left">Kalan: 0 gün</small>
-        </div>
-        <div class="dash-card">
-            <label>Kalan (-)</label>
-            <div class="value" id="net-ex-extra">₺0,00</div>
-        </div>
-        <div class="dash-card">
-            <label>Kalan (+)</label>
-            <div class="value" style="color: var(--success)" id="net-inc-extra">₺0,00</div>
+        <div class="today" id="today-date">Bugün: --</div>
+        <div class="period-indicator">
+            <div class="dot active" id="dot-1"></div>
+            <div class="dot" id="dot-2"></div>
         </div>
     </div>
 
-    <!-- Sabit Bütçe Kalemleri -->
-    <div class="section-title">Temel</div>
-    <div class="form-group"><label>Maaş</label><input type="number" id="salary" value="" oninput="calculate()" placeholder="0"></div>
-    <div class="form-group"><label>Nakit</label><input type="number" id="cash" value="" oninput="calculate()" placeholder="0"></div>
-    <div class="form-group"><label>Borç</label><input type="number" id="card-debt" value="" oninput="calculate()" placeholder="0"></div>
+    <div class="container" id="container">
+        
+        <!-- DÖNEM 1: 1-7 -->
+        <div class="period" id="period-1">
+            <div class="install-banner" id="install-banner">
+                📱 Ana ekrana ekle: Safari Paylaş → Ekle
+            </div>
 
-    <!-- Sınırsız Kalemler -->
-    <div class="section-title" style="color: var(--danger);">Giderler</div>
-    <div id="fixed-expenses-list"></div>
-    <button class="btn-add" onclick="addRow('fixed-expenses-list', 'expense')">+ Ekle</button>
+            <div class="period-title">Dönem 1: 1-7 (Maaş Gelişi)</div>
 
-    <div class="section-title" style="color: var(--danger);">Taksitler</div>
-    <div id="installments-list"></div>
-    <button class="btn-add" onclick="addRow('installments-list', 'expense')">+ Ekle</button>
+            <!-- Özet Paneli -->
+            <div class="dashboard">
+                <div class="dash-card full">
+                    <label>Günlük Limit</label>
+                    <div class="value" id="daily-limit-1">₺0,00</div>
+                    <small style="font-size: 0.65rem; opacity: 0.8;" id="days-left-1">Kalan: 0 gün</small>
+                </div>
+                <div class="dash-card">
+                    <label>Kalan (-)</label>
+                    <div class="value" id="net-ex-extra-1">₺0,00</div>
+                </div>
+                <div class="dash-card">
+                    <label>Kalan (+)</label>
+                    <div class="value" style="color: var(--success)" id="net-inc-extra-1">₺0,00</div>
+                </div>
+            </div>
 
-    <div class="section-title" style="color: var(--success);">Gelirler</div>
-    <div id="extra-income-list"></div>
-    <button class="btn-add" onclick="addRow('extra-income-list', 'income')">+ Ekle</button>
+            <!-- Sabit Bütçe Kalemleri -->
+            <div class="section-title">Temel</div>
+            <div class="form-group"><label>Maaş</label><input type="number" id="salary-1" value="" oninput="calculate(1)" placeholder="0"></div>
+            <div class="form-group"><label>Nakit</label><input type="number" id="cash-1" value="" oninput="calculate(1)" placeholder="0"></div>
+            <div class="form-group"><label>Borç</label><input type="number" id="card-debt-1" value="" oninput="calculate(1)" placeholder="0"></div>
+
+            <!-- Giderler -->
+            <div class="section-title" style="color: var(--danger);">Giderler</div>
+            <div id="fixed-expenses-list-1"></div>
+            <button class="btn-add" onclick="addRow('fixed-expenses-list-1', 'expense', 1)">+ Ekle</button>
+
+            <div class="section-title" style="color: var(--danger);">Taksitler</div>
+            <div id="installments-list-1"></div>
+            <button class="btn-add" onclick="addRow('installments-list-1', 'expense', 1)">+ Ekle</button>
+
+            <div class="section-title" style="color: var(--success);">Gelirler</div>
+            <div id="extra-income-list-1"></div>
+            <button class="btn-add" onclick="addRow('extra-income-list-1', 'income', 1)">+ Ekle</button>
+        </div>
+
+        <!-- DÖNEM 2: 8-31 -->
+        <div class="period" id="period-2">
+            <div class="period-title">Dönem 2: 8-31 (Borç Ödendikten Sonra)</div>
+
+            <!-- Özet Paneli -->
+            <div class="dashboard">
+                <div class="dash-card full">
+                    <label>Günlük Limit</label>
+                    <div class="value" id="daily-limit-2">₺0,00</div>
+                    <small style="font-size: 0.65rem; opacity: 0.8;" id="days-left-2">Kalan: 0 gün</small>
+                </div>
+                <div class="dash-card">
+                    <label>Kalan (-)</label>
+                    <div class="value" id="net-ex-extra-2">₺0,00</div>
+                </div>
+                <div class="dash-card">
+                    <label>Kalan (+)</label>
+                    <div class="value" style="color: var(--success)" id="net-inc-extra-2">₺0,00</div>
+                </div>
+            </div>
+
+            <!-- Sabit Bütçe Kalemleri -->
+            <div class="section-title">Temel</div>
+            <div class="form-group"><label>Maaş</label><input type="number" id="salary-2" value="" oninput="calculate(2)" placeholder="0"></div>
+            <div class="form-group"><label>Nakit</label><input type="number" id="cash-2" value="" oninput="calculate(2)" placeholder="0"></div>
+            <div class="form-group"><label>Borç</label><input type="number" id="card-debt-2" value="" oninput="calculate(2)" placeholder="0"></div>
+
+            <!-- Giderler -->
+            <div class="section-title" style="color: var(--danger);">Giderler</div>
+            <div id="fixed-expenses-list-2"></div>
+            <button class="btn-add" onclick="addRow('fixed-expenses-list-2', 'expense', 2)">+ Ekle</button>
+
+            <div class="section-title" style="color: var(--danger);">Taksitler</div>
+            <div id="installments-list-2"></div>
+            <button class="btn-add" onclick="addRow('installments-list-2', 'expense', 2)">+ Ekle</button>
+
+            <div class="section-title" style="color: var(--success);">Gelirler</div>
+            <div id="extra-income-list-2"></div>
+            <button class="btn-add" onclick="addRow('extra-income-list-2', 'income', 2)">+ Ekle</button>
+        </div>
+
+    </div>
 
     <script>
         if ('serviceWorker' in navigator) {
@@ -245,31 +367,58 @@
             document.getElementById('install-banner').classList.add('show');
         });
 
-        function getDaysUntil28th() {
+        // Bugünün tarihini göster
+        function updateTodayDate() {
             const today = new Date();
-            const currentDay = today.getDate();
-            let targetDate = new Date(today.getFullYear(), today.getMonth(), 28);
-
-            if (currentDay > 28) {
-                targetDate = new Date(today.getFullYear(), today.getMonth() + 1, 28);
-            }
-
-            const diffTime = targetDate - today;
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-            return diffDays > 0 ? diffDays : 1;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = today.toLocaleDateString('tr-TR', options);
+            document.getElementById('today-date').textContent = `Bugün: ${dateStr}`;
         }
 
-        function addRow(containerId, type = 'expense', name = '', value = '') {
+        // Kaydırma göstergesini güncelle
+        const container = document.getElementById('container');
+        container.addEventListener('scroll', () => {
+            const scrollPosition = container.scrollLeft;
+            const containerWidth = container.offsetWidth;
+            const currentPeriod = Math.round(scrollPosition / containerWidth) + 1;
+            
+            document.getElementById('dot-1').classList.toggle('active', currentPeriod === 1);
+            document.getElementById('dot-2').classList.toggle('active', currentPeriod === 2);
+        });
+
+        function getDaysLeftInPeriod(period) {
+            const today = new Date();
+            const currentDay = today.getDate();
+            
+            if (period === 1) {
+                // 1-7 arası
+                if (currentDay <= 7) {
+                    return 8 - currentDay;
+                } else {
+                    return 0;
+                }
+            } else {
+                // 8-31 arası
+                if (currentDay >= 8) {
+                    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+                    return lastDay - currentDay + 1;
+                } else {
+                    return 0;
+                }
+            }
+        }
+
+        function addRow(containerId, type = 'expense', period = 1) {
             const container = document.getElementById(containerId);
             const div = document.createElement('div');
             div.className = `dynamic-row ${type}`;
             div.innerHTML = `
-                <input type="text" placeholder="Açıkla" value="${name}" class="row-name" oninput="calculate()">
-                <input type="number" placeholder="₺" value="${value}" min="0" step="0.01" class="row-val" oninput="calculate()">
-                <button class="btn-del" onclick="this.parentElement.remove(); calculate();">✕</button>
+                <input type="text" placeholder="Açıkla" value="" class="row-name" oninput="calculate(${period})">
+                <input type="number" placeholder="₺" value="" min="0" step="0.01" class="row-val" oninput="calculate(${period})">
+                <button class="btn-del" onclick="this.parentElement.remove(); calculate(${period});">✕</button>
             `;
             container.appendChild(div);
-            calculate();
+            calculate(period);
         }
 
         function getListTotal(containerId) {
@@ -294,12 +443,22 @@
 
         function saveData() {
             const state = {
-                salary: document.getElementById('salary').value || '',
-                cash: document.getElementById('cash').value || '',
-                cardDebt: document.getElementById('card-debt').value || '',
-                fixedExpenses: getListData('fixed-expenses-list'),
-                installments: getListData('installments-list'),
-                extraIncome: getListData('extra-income-list')
+                period1: {
+                    salary: document.getElementById('salary-1').value || '',
+                    cash: document.getElementById('cash-1').value || '',
+                    cardDebt: document.getElementById('card-debt-1').value || '',
+                    fixedExpenses: getListData('fixed-expenses-list-1'),
+                    installments: getListData('installments-list-1'),
+                    extraIncome: getListData('extra-income-list-1')
+                },
+                period2: {
+                    salary: document.getElementById('salary-2').value || '',
+                    cash: document.getElementById('cash-2').value || '',
+                    cardDebt: document.getElementById('card-debt-2').value || '',
+                    fixedExpenses: getListData('fixed-expenses-list-2'),
+                    installments: getListData('installments-list-2'),
+                    extraIncome: getListData('extra-income-list-2')
+                }
             };
             localStorage.setItem('hmc_data', JSON.stringify(state));
         }
@@ -310,46 +469,66 @@
 
             const state = JSON.parse(saved);
 
-            document.getElementById('salary').value = state.salary || '';
-            document.getElementById('cash').value = state.cash || '';
-            document.getElementById('card-debt').value = state.cardDebt || '';
+            // Dönem 1
+            if (state.period1) {
+                document.getElementById('salary-1').value = state.period1.salary || '';
+                document.getElementById('cash-1').value = state.period1.cash || '';
+                document.getElementById('card-debt-1').value = state.period1.cardDebt || '';
+                if (state.period1.fixedExpenses) {
+                    state.period1.fixedExpenses.forEach(item => addRow('fixed-expenses-list-1', 'expense', 1));
+                }
+                if (state.period1.installments) {
+                    state.period1.installments.forEach(item => addRow('installments-list-1', 'expense', 1));
+                }
+                if (state.period1.extraIncome) {
+                    state.period1.extraIncome.forEach(item => addRow('extra-income-list-1', 'income', 1));
+                }
+            }
 
-            if (state.fixedExpenses) {
-                state.fixedExpenses.forEach(item => addRow('fixed-expenses-list', 'expense', item.name, item.val));
-            }
-            if (state.installments) {
-                state.installments.forEach(item => addRow('installments-list', 'expense', item.name, item.val));
-            }
-            if (state.extraIncome) {
-                state.extraIncome.forEach(item => addRow('extra-income-list', 'income', item.name, item.val));
+            // Dönem 2
+            if (state.period2) {
+                document.getElementById('salary-2').value = state.period2.salary || '';
+                document.getElementById('cash-2').value = state.period2.cash || '';
+                document.getElementById('card-debt-2').value = state.period2.cardDebt || '';
+                if (state.period2.fixedExpenses) {
+                    state.period2.fixedExpenses.forEach(item => addRow('fixed-expenses-list-2', 'expense', 2));
+                }
+                if (state.period2.installments) {
+                    state.period2.installments.forEach(item => addRow('installments-list-2', 'expense', 2));
+                }
+                if (state.period2.extraIncome) {
+                    state.period2.extraIncome.forEach(item => addRow('extra-income-list-2', 'income', 2));
+                }
             }
         }
 
-        function calculate() {
-            const salary = parseFloat(document.getElementById('salary').value) || 0;
-            const cash = parseFloat(document.getElementById('cash').value) || 0;
-            const cardDebt = parseFloat(document.getElementById('card-debt').value) || 0;
+        function calculate(period) {
+            const salary = parseFloat(document.getElementById(`salary-${period}`).value) || 0;
+            const cash = parseFloat(document.getElementById(`cash-${period}`).value) || 0;
+            const cardDebt = parseFloat(document.getElementById(`card-debt-${period}`).value) || 0;
 
-            const fixedExpenses = getListTotal('fixed-expenses-list');
-            const installments = getListTotal('installments-list');
-            const extraIncome = getListTotal('extra-income-list');
+            const fixedExpenses = getListTotal(`fixed-expenses-list-${period}`);
+            const installments = getListTotal(`installments-list-${period}`);
+            const extraIncome = getListTotal(`extra-income-list-${period}`);
 
             const netExExtra = salary + cash - fixedExpenses - installments - cardDebt;
             const netIncExtra = netExExtra + extraIncome;
 
-            const daysLeft = getDaysUntil28th();
-            const dailyLimit = netIncExtra / daysLeft;
+            const daysLeft = getDaysLeftInPeriod(period);
+            const dailyLimit = daysLeft > 0 ? netIncExtra / daysLeft : 0;
 
-            document.getElementById('net-ex-extra').textContent = `₺${netExExtra.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
-            document.getElementById('net-inc-extra').textContent = `₺${netIncExtra.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
-            document.getElementById('daily-limit').textContent = `₺${dailyLimit.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
-            document.getElementById('days-left').textContent = `Kalan: ${daysLeft} gün`;
+            document.getElementById(`net-ex-extra-${period}`).textContent = `₺${netExExtra.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            document.getElementById(`net-inc-extra-${period}`).textContent = `₺${netIncExtra.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            document.getElementById(`daily-limit-${period}`).textContent = `₺${dailyLimit.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+            document.getElementById(`days-left-${period}`).textContent = `Kalan: ${daysLeft} gün`;
 
             saveData();
         }
 
+        updateTodayDate();
         loadData();
-        calculate();
+        calculate(1);
+        calculate(2);
     </script>
 </body>
 </html>
