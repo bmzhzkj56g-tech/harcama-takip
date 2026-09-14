@@ -78,6 +78,105 @@
 
         .dot.active { background: var(--accent); }
 
+        /* HOME SCREEN */
+        .home-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: calc(100vh - var(--safe-top) - var(--safe-bottom));
+            padding: 20px;
+            gap: 20px;
+            display: none;
+        }
+
+        .home-screen.active {
+            display: flex;
+        }
+
+        .home-btn {
+            width: 100%;
+            max-width: 300px;
+            padding: 40px 20px;
+            background: var(--card);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+
+        .home-btn:active {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        /* MONTH SELECTOR */
+        .month-selector {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: calc(100vh - var(--safe-top) - var(--safe-bottom));
+            padding: 12px;
+            padding-bottom: max(12px, var(--safe-bottom));
+            gap: 12px;
+            display: none;
+        }
+
+        .month-selector.active {
+            display: flex;
+        }
+
+        .month-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 12px;
+        }
+
+        .month-btn {
+            padding: 20px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+
+        .month-btn:active {
+            background: var(--accent);
+            color: var(--bg);
+        }
+
+        .back-btn {
+            padding: 12px;
+            background: transparent;
+            border: 1px solid var(--text-muted);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+            font-size: 0.9rem;
+        }
+
+        /* CONTAINER */
         .container {
             display: flex;
             width: 100%;
@@ -87,6 +186,11 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
+            display: none;
+        }
+
+        .container.active {
+            display: flex;
         }
 
         .period {
@@ -99,7 +203,7 @@
         }
 
         .period-title {
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             font-weight: 700;
             color: var(--accent);
             text-transform: uppercase;
@@ -241,24 +345,50 @@
             font-size: 0.9rem;
         }
 
-        .install-banner {
-            background: #222222;
-            padding: 8px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            text-align: center;
-            font-size: 0.8rem;
-            display: none;
+        .back-home-btn {
+            position: fixed;
+            top: max(12px, var(--safe-top));
+            left: 12px;
+            background: var(--card);
             border: 1px solid var(--border);
+            color: var(--text);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            z-index: 20;
+            -webkit-appearance: none;
+            appearance: none;
         }
-        .install-banner.show { display: block; }
     </style>
 </head>
 <body>
 
-    <div class="header">
+    <button class="back-home-btn" id="back-home-btn" onclick="goHome()" style="display: none;">← Ana</button>
+
+    <!-- HOME SCREEN -->
+    <div class="home-screen active" id="home-screen">
+        <div class="header">
+            <h1>HMC</h1>
+            <div class="today" id="today-date">Bugün: --</div>
+        </div>
+        <button class="home-btn" onclick="showCurrentPeriod()">Mevcut Dönem</button>
+        <button class="home-btn" onclick="showPastMonths()">Geçmiş Dönem İncele</button>
+    </div>
+
+    <!-- MONTH SELECTOR -->
+    <div class="month-selector" id="month-selector">
+        <div style="text-align: center; padding: 12px; border-bottom: 1px solid var(--border);">
+            <h2 style="font-size: 1.1rem; margin-bottom: 4px;">Ay Seçin</h2>
+        </div>
+        <div class="month-grid" id="month-grid"></div>
+        <button class="back-btn" onclick="goHome()">← Geri Dön</button>
+    </div>
+
+    <!-- PERIODS CONTAINER -->
+    <div class="header" id="header" style="display: none;">
         <h1>HMC</h1>
-        <div class="today" id="today-date">Bugün: --</div>
+        <div class="today" id="current-months">--</div>
         <div class="period-indicator">
             <div class="dot active" id="dot-1"></div>
             <div class="dot" id="dot-2"></div>
@@ -266,16 +396,10 @@
     </div>
 
     <div class="container" id="container">
-        
-        <!-- DÖNEM 1: 1-7 -->
+        <!-- Dönem 1 -->
         <div class="period" id="period-1">
-            <div class="install-banner" id="install-banner">
-                📱 Ana ekrana ekle: Safari Paylaş → Ekle
-            </div>
+            <div class="period-title" id="period-1-title">--</div>
 
-            <div class="period-title">Dönem 1: 1-7 (Maaş Gelişi)</div>
-
-            <!-- Özet Paneli -->
             <div class="dashboard">
                 <div class="dash-card full">
                     <label>Günlük Limit</label>
@@ -292,13 +416,11 @@
                 </div>
             </div>
 
-            <!-- Sabit Bütçe Kalemleri -->
             <div class="section-title">Temel</div>
             <div class="form-group"><label>Maaş</label><input type="number" id="salary-1" value="" oninput="calculate(1)" placeholder="0"></div>
             <div class="form-group"><label>Nakit</label><input type="number" id="cash-1" value="" oninput="calculate(1)" placeholder="0"></div>
             <div class="form-group"><label>Borç</label><input type="number" id="card-debt-1" value="" oninput="calculate(1)" placeholder="0"></div>
 
-            <!-- Giderler -->
             <div class="section-title" style="color: var(--danger);">Giderler</div>
             <div id="fixed-expenses-list-1"></div>
             <button class="btn-add" onclick="addRow('fixed-expenses-list-1', 'expense', 1)">+ Ekle</button>
@@ -312,11 +434,10 @@
             <button class="btn-add" onclick="addRow('extra-income-list-1', 'income', 1)">+ Ekle</button>
         </div>
 
-        <!-- DÖNEM 2: 8-31 -->
+        <!-- Dönem 2 -->
         <div class="period" id="period-2">
-            <div class="period-title">Dönem 2: 8-31 (Borç Ödendikten Sonra)</div>
+            <div class="period-title" id="period-2-title">--</div>
 
-            <!-- Özet Paneli -->
             <div class="dashboard">
                 <div class="dash-card full">
                     <label>Günlük Limit</label>
@@ -333,13 +454,11 @@
                 </div>
             </div>
 
-            <!-- Sabit Bütçe Kalemleri -->
             <div class="section-title">Temel</div>
             <div class="form-group"><label>Maaş</label><input type="number" id="salary-2" value="" oninput="calculate(2)" placeholder="0"></div>
             <div class="form-group"><label>Nakit</label><input type="number" id="cash-2" value="" oninput="calculate(2)" placeholder="0"></div>
             <div class="form-group"><label>Borç</label><input type="number" id="card-debt-2" value="" oninput="calculate(2)" placeholder="0"></div>
 
-            <!-- Giderler -->
             <div class="section-title" style="color: var(--danger);">Giderler</div>
             <div id="fixed-expenses-list-2"></div>
             <button class="btn-add" onclick="addRow('fixed-expenses-list-2', 'expense', 2)">+ Ekle</button>
@@ -352,7 +471,6 @@
             <div id="extra-income-list-2"></div>
             <button class="btn-add" onclick="addRow('extra-income-list-2', 'income', 2)">+ Ekle</button>
         </div>
-
     </div>
 
     <script>
@@ -360,14 +478,12 @@
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
 
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-banner').classList.add('show');
-        });
+        const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        
+        let currentMode = 'home'; // home, current, past
+        let selectedMonth = null; // For past month selection
+        let selectedYear = null;
 
-        // Bugünün tarihini göster
         function updateTodayDate() {
             const today = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -375,36 +491,144 @@
             document.getElementById('today-date').textContent = `Bugün: ${dateStr}`;
         }
 
-        // Kaydırma göstergesini güncelle
-        const container = document.getElementById('container');
-        container.addEventListener('scroll', () => {
-            const scrollPosition = container.scrollLeft;
-            const containerWidth = container.offsetWidth;
-            const currentPeriod = Math.round(scrollPosition / containerWidth) + 1;
-            
-            document.getElementById('dot-1').classList.toggle('active', currentPeriod === 1);
-            document.getElementById('dot-2').classList.toggle('active', currentPeriod === 2);
-        });
+        function getMonthData(month, year) {
+            // month: 0-11
+            const d1 = new Date(year, month, 1);
+            const d8 = new Date(year, month, 8);
+            const lastDay = new Date(year, month + 1, 0).getDate();
+            const d31 = new Date(year, month, lastDay);
 
-        function getDaysLeftInPeriod(period) {
+            const daysInPeriod1 = 7;
+            const daysInPeriod2 = lastDay - 7;
+
+            return {
+                month1: monthNames[month],
+                month2: monthNames[(month + 1) % 12],
+                year: year,
+                daysInPeriod1,
+                daysInPeriod2
+            };
+        }
+
+        function getStorageKey(month, year, period) {
+            return `hmc_${month}_${year}_period_${period}`;
+        }
+
+        function showCurrentPeriod() {
+            currentMode = 'current';
+            selectedMonth = null;
+            
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            const data = getMonthData(currentMonth, currentYear);
+            
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('month-selector').classList.remove('active');
+            document.getElementById('header').style.display = 'block';
+            document.getElementById('container').classList.add('active');
+            document.getElementById('back-home-btn').style.display = 'block';
+            
+            document.getElementById('current-months').textContent = `${data.month1} + ${data.month2}`;
+            document.getElementById('period-1-title').textContent = data.month1;
+            document.getElementById('period-2-title').textContent = data.month2;
+            
+            loadData(currentMonth, currentYear);
+            calculate(1);
+            calculate(2);
+            
+            // Kaydırma göstergesi
+            const container = document.getElementById('container');
+            container.addEventListener('scroll', () => {
+                const scrollPosition = container.scrollLeft;
+                const containerWidth = container.offsetWidth;
+                const currentPeriod = Math.round(scrollPosition / containerWidth) + 1;
+                
+                document.getElementById('dot-1').classList.toggle('active', currentPeriod === 1);
+                document.getElementById('dot-2').classList.toggle('active', currentPeriod === 2);
+            });
+        }
+
+        function showPastMonths() {
+            currentMode = 'past';
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('month-selector').classList.add('active');
+            document.getElementById('container').classList.remove('active');
+            document.getElementById('header').style.display = 'none';
+            document.getElementById('back-home-btn').style.display = 'none';
+            
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth();
+            
+            let html = '';
+            
+            // Son 24 ay göster
+            for (let i = 23; i >= 0; i--) {
+                const date = new Date(currentYear, currentMonth - i, 1);
+                const month = date.getMonth();
+                const year = date.getFullYear();
+                const monthName = monthNames[month];
+                
+                html += `<button class="month-btn" onclick="selectMonth(${month}, ${year})">${monthName} ${year}</button>`;
+            }
+            
+            document.getElementById('month-grid').innerHTML = html;
+        }
+
+        function selectMonth(month, year) {
+            selectedMonth = month;
+            selectedYear = year;
+            currentMode = 'past-detail';
+            
+            const data = getMonthData(month, year);
+            
+            document.getElementById('home-screen').classList.remove('active');
+            document.getElementById('month-selector').classList.remove('active');
+            document.getElementById('header').style.display = 'block';
+            document.getElementById('container').classList.add('active');
+            document.getElementById('back-home-btn').style.display = 'block';
+            
+            document.getElementById('current-months').textContent = `${data.month1} + ${data.month2}`;
+            document.getElementById('period-1-title').textContent = data.month1;
+            document.getElementById('period-2-title').textContent = data.month2;
+            
+            loadData(month, year);
+            calculate(1);
+            calculate(2);
+        }
+
+        function goHome() {
+            currentMode = 'home';
+            selectedMonth = null;
+            
+            document.getElementById('home-screen').classList.add('active');
+            document.getElementById('month-selector').classList.remove('active');
+            document.getElementById('container').classList.remove('active');
+            document.getElementById('header').style.display = 'none';
+            document.getElementById('back-home-btn').style.display = 'none';
+        }
+
+        function getDaysLeftInPeriod(period, month, year) {
             const today = new Date();
             const currentDay = today.getDate();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            const isCurrentMonth = month === currentMonth && year === currentYear;
             
             if (period === 1) {
-                // 1-7 arası
-                if (currentDay <= 7) {
-                    return 8 - currentDay;
-                } else {
-                    return 0;
+                if (!isCurrentMonth || currentDay <= 7) {
+                    return 7 - Math.max(currentDay - 1, 0);
                 }
+                return 0;
             } else {
-                // 8-31 arası
-                if (currentDay >= 8) {
-                    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-                    return lastDay - currentDay + 1;
-                } else {
-                    return 0;
+                const lastDay = new Date(year, month + 1, 0).getDate();
+                if (!isCurrentMonth || currentDay >= 8) {
+                    return lastDay - 7;
                 }
+                return lastDay - Math.max(currentDay - 1, 7);
             }
         }
 
@@ -442,62 +666,95 @@
         }
 
         function saveData() {
-            const state = {
-                period1: {
-                    salary: document.getElementById('salary-1').value || '',
-                    cash: document.getElementById('cash-1').value || '',
-                    cardDebt: document.getElementById('card-debt-1').value || '',
-                    fixedExpenses: getListData('fixed-expenses-list-1'),
-                    installments: getListData('installments-list-1'),
-                    extraIncome: getListData('extra-income-list-1')
-                },
-                period2: {
-                    salary: document.getElementById('salary-2').value || '',
-                    cash: document.getElementById('cash-2').value || '',
-                    cardDebt: document.getElementById('card-debt-2').value || '',
-                    fixedExpenses: getListData('fixed-expenses-list-2'),
-                    installments: getListData('installments-list-2'),
-                    extraIncome: getListData('extra-income-list-2')
-                }
-            };
-            localStorage.setItem('hmc_data', JSON.stringify(state));
-        }
-
-        function loadData() {
-            const saved = localStorage.getItem('hmc_data');
-            if (!saved) return;
-
-            const state = JSON.parse(saved);
-
-            // Dönem 1
-            if (state.period1) {
-                document.getElementById('salary-1').value = state.period1.salary || '';
-                document.getElementById('cash-1').value = state.period1.cash || '';
-                document.getElementById('card-debt-1').value = state.period1.cardDebt || '';
-                if (state.period1.fixedExpenses) {
-                    state.period1.fixedExpenses.forEach(item => addRow('fixed-expenses-list-1', 'expense', 1));
-                }
-                if (state.period1.installments) {
-                    state.period1.installments.forEach(item => addRow('installments-list-1', 'expense', 1));
-                }
-                if (state.period1.extraIncome) {
-                    state.period1.extraIncome.forEach(item => addRow('extra-income-list-1', 'income', 1));
-                }
+            if (!selectedMonth && currentMode === 'current') {
+                const today = new Date();
+                selectedMonth = today.getMonth();
+                selectedYear = today.getFullYear();
             }
 
-            // Dönem 2
-            if (state.period2) {
-                document.getElementById('salary-2').value = state.period2.salary || '';
-                document.getElementById('cash-2').value = state.period2.cash || '';
-                document.getElementById('card-debt-2').value = state.period2.cardDebt || '';
-                if (state.period2.fixedExpenses) {
-                    state.period2.fixedExpenses.forEach(item => addRow('fixed-expenses-list-2', 'expense', 2));
+            if (selectedMonth === null || selectedYear === null) return;
+
+            for (let period = 1; period <= 2; period++) {
+                const key = getStorageKey(selectedMonth, selectedYear, period);
+                const state = {
+                    salary: document.getElementById(`salary-${period}`).value || '',
+                    cash: document.getElementById(`cash-${period}`).value || '',
+                    cardDebt: document.getElementById(`card-debt-${period}`).value || '',
+                    fixedExpenses: getListData(`fixed-expenses-list-${period}`),
+                    installments: getListData(`installments-list-${period}`),
+                    extraIncome: getListData(`extra-income-list-${period}`)
+                };
+                localStorage.setItem(key, JSON.stringify(state));
+            }
+        }
+
+        function loadData(month, year) {
+            selectedMonth = month;
+            selectedYear = year;
+
+            // Temizle
+            for (let period = 1; period <= 2; period++) {
+                document.getElementById(`salary-${period}`).value = '';
+                document.getElementById(`cash-${period}`).value = '';
+                document.getElementById(`card-debt-${period}`).value = '';
+                document.getElementById(`fixed-expenses-list-${period}`).innerHTML = '';
+                document.getElementById(`installments-list-${period}`).innerHTML = '';
+                document.getElementById(`extra-income-list-${period}`).innerHTML = '';
+            }
+
+            // Yükle
+            for (let period = 1; period <= 2; period++) {
+                const key = getStorageKey(month, year, period);
+                const saved = localStorage.getItem(key);
+                
+                if (!saved) continue;
+                
+                const state = JSON.parse(saved);
+                
+                document.getElementById(`salary-${period}`).value = state.salary || '';
+                document.getElementById(`cash-${period}`).value = state.cash || '';
+                document.getElementById(`card-debt-${period}`).value = state.cardDebt || '';
+                
+                if (state.fixedExpenses) {
+                    state.fixedExpenses.forEach(item => {
+                        const container = document.getElementById(`fixed-expenses-list-${period}`);
+                        const div = document.createElement('div');
+                        div.className = 'dynamic-row expense';
+                        div.innerHTML = `
+                            <input type="text" placeholder="Açıkla" value="${item.name}" class="row-name" oninput="calculate(${period})">
+                            <input type="number" placeholder="₺" value="${item.val}" min="0" step="0.01" class="row-val" oninput="calculate(${period})">
+                            <button class="btn-del" onclick="this.parentElement.remove(); calculate(${period});">✕</button>
+                        `;
+                        container.appendChild(div);
+                    });
                 }
-                if (state.period2.installments) {
-                    state.period2.installments.forEach(item => addRow('installments-list-2', 'expense', 2));
+                
+                if (state.installments) {
+                    state.installments.forEach(item => {
+                        const container = document.getElementById(`installments-list-${period}`);
+                        const div = document.createElement('div');
+                        div.className = 'dynamic-row expense';
+                        div.innerHTML = `
+                            <input type="text" placeholder="Açıkla" value="${item.name}" class="row-name" oninput="calculate(${period})">
+                            <input type="number" placeholder="₺" value="${item.val}" min="0" step="0.01" class="row-val" oninput="calculate(${period})">
+                            <button class="btn-del" onclick="this.parentElement.remove(); calculate(${period});">✕</button>
+                        `;
+                        container.appendChild(div);
+                    });
                 }
-                if (state.period2.extraIncome) {
-                    state.period2.extraIncome.forEach(item => addRow('extra-income-list-2', 'income', 2));
+                
+                if (state.extraIncome) {
+                    state.extraIncome.forEach(item => {
+                        const container = document.getElementById(`extra-income-list-${period}`);
+                        const div = document.createElement('div');
+                        div.className = 'dynamic-row income';
+                        div.innerHTML = `
+                            <input type="text" placeholder="Açıkla" value="${item.name}" class="row-name" oninput="calculate(${period})">
+                            <input type="number" placeholder="₺" value="${item.val}" min="0" step="0.01" class="row-val" oninput="calculate(${period})">
+                            <button class="btn-del" onclick="this.parentElement.remove(); calculate(${period});">✕</button>
+                        `;
+                        container.appendChild(div);
+                    });
                 }
             }
         }
@@ -514,7 +771,7 @@
             const netExExtra = salary + cash - fixedExpenses - installments - cardDebt;
             const netIncExtra = netExExtra + extraIncome;
 
-            const daysLeft = getDaysLeftInPeriod(period);
+            const daysLeft = selectedMonth !== null ? getDaysLeftInPeriod(period, selectedMonth, selectedYear) : 0;
             const dailyLimit = daysLeft > 0 ? netIncExtra / daysLeft : 0;
 
             document.getElementById(`net-ex-extra-${period}`).textContent = `₺${netExExtra.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
@@ -526,9 +783,6 @@
         }
 
         updateTodayDate();
-        loadData();
-        calculate(1);
-        calculate(2);
     </script>
 </body>
 </html>
