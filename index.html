@@ -2,806 +2,545 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="HMC">
-    <meta name="theme-color" content="#000000">
-    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%23ffffff' width='192' height='192'/><text x='50%' y='50%' font-size='100' fill='black' text-anchor='middle' dominant-baseline='middle'>₺</text></svg>">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%23ffffff' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='90' fill='black' text-anchor='middle' dominant-baseline='middle'>₺</text></svg>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HMC</title>
     <style>
-        :root {
-            --bg: #000000;
-            --card: #1a1a1a;
-            --text: #ffffff;
-            --text-muted: #888888;
-            --accent: #ffffff;
-            --danger: #ff4444;
-            --success: #ffdd00;
-            --border: #333333;
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
-        html, body { width: 100%; height: 100%; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
-            background: var(--bg); 
-            color: var(--text); 
-            overflow: hidden;
-            -webkit-touch-callout: none;
-            -webkit-tap-highlight-color: transparent;
+            background: #000; 
+            color: #fff; 
+            font-family: system-ui, -apple-system, sans-serif;
+            overflow-x: hidden;
         }
 
-        .header {
-            text-align: center;
-            padding: 12px;
-            padding-top: max(12px, var(--safe-top));
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-            position: relative;
-            z-index: 10;
-        }
+        .screen { display: none; }
+        .screen.active { display: flex; }
 
-        .header h1 { 
-            font-size: 1.3rem; 
-            font-weight: 700; 
-            color: var(--accent); 
-            letter-spacing: 2px;
-            margin-bottom: 4px;
-        }
-
-        .today { 
-            font-size: 0.75rem; 
-            color: var(--text-muted); 
-        }
-
-        /* HOME SCREEN */
-        .home-screen {
-            display: flex;
+        /* HOME */
+        #home {
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            height: calc(100vh - var(--safe-top) - var(--safe-bottom));
-            padding: 20px;
+            height: 100vh;
             gap: 20px;
         }
 
-        .home-screen.hidden {
-            display: none;
-        }
+        .home-title { font-size: 2rem; font-weight: bold; letter-spacing: 2px; }
 
-        .home-btn {
-            width: 100%;
-            max-width: 300px;
-            padding: 40px 20px;
-            background: var(--card);
-            border: 2px solid var(--accent);
-            border-radius: 12px;
-            color: var(--text);
-            font-size: 1.1rem;
-            font-weight: 700;
+        .home-date { font-size: 0.9rem; color: #888; }
+
+        .btn {
+            padding: 15px 30px;
+            background: #1a1a1a;
+            border: 2px solid #fff;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            width: 90%;
+            max-width: 300px;
         }
 
-        .home-btn:active {
-            background: var(--accent);
-            color: var(--bg);
-        }
+        .btn:active { background: #fff; color: #000; }
 
-        /* MONTH SELECTOR */
-        .month-selector {
-            display: flex;
+        /* MONTH SELECT */
+        #months {
             flex-direction: column;
-            width: 100%;
-            height: calc(100vh - var(--safe-top) - var(--safe-bottom));
-            padding: 12px;
-            padding-bottom: max(12px, var(--safe-bottom));
-            gap: 12px;
-        }
-
-        .month-selector.hidden {
-            display: none;
+            padding: 20px;
+            gap: 10px;
+            height: 100vh;
+            overflow-y: auto;
         }
 
         .month-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
+            gap: 10px;
             flex: 1;
-            overflow-y: auto;
         }
 
         .month-btn {
-            padding: 20px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            color: var(--text);
-            font-size: 0.95rem;
-            font-weight: 600;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            border-radius: 8px;
             cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
+            font-weight: 600;
         }
 
-        .month-btn:active {
-            background: var(--accent);
-            color: var(--bg);
+        .month-btn:active { background: #fff; color: #000; }
+
+        /* PERIOD */
+        #period {
+            flex-direction: column;
+            height: 100vh;
+            padding: 15px;
+            overflow-y: auto;
+            padding-top: 50px;
         }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #000;
+            padding: 10px;
+            border-bottom: 1px solid #333;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title { font-size: 1.2rem; font-weight: bold; }
 
         .back-btn {
-            padding: 12px;
-            background: transparent;
-            border: 1px solid var(--text-muted);
-            border-radius: 8px;
-            color: var(--text-muted);
-            font-weight: 600;
+            background: #1a1a1a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 6px;
             cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
         }
 
-        /* CONTAINER */
-        .container {
-            display: flex;
-            width: 100%;
-            height: calc(100vh - var(--safe-top) - var(--safe-bottom));
-            overflow-x: auto;
-            overflow-y: hidden;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-        }
+        .back-btn:active { background: #fff; color: #000; }
 
-        .container.hidden {
-            display: none;
-        }
-
-        .period {
-            flex: 0 0 100%;
-            width: 100%;
-            overflow-y: auto;
-            scroll-snap-align: start;
-            padding: 12px;
-            padding-bottom: max(12px, var(--safe-bottom));
-        }
-
-        .period-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 8px;
-        }
+        .period-title { font-size: 1.1rem; font-weight: bold; margin: 10px 0; text-align: center; }
 
         .dashboard {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 16px;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: #111;
+            padding: 10px;
+            border-radius: 8px;
+            border: 2px solid #fff;
         }
 
-        .dash-card {
-            background: var(--card);
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
+        .dash-item {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 6px;
             text-align: center;
         }
 
-        .dash-card.full { 
-            grid-column: span 2; 
-            background: #222222;
-            border: 2px solid var(--accent);
+        .dash-label { font-size: 0.75rem; color: #888; font-weight: 600; margin-bottom: 4px; }
+
+        .dash-value { font-size: 1.3rem; font-weight: 700; }
+
+        .dash-daily { font-size: 0.7rem; color: #888; margin-top: 4px; }
+
+        .section-title {
+            font-size: 0.85rem;
+            color: #888;
+            font-weight: 600;
+            margin-top: 12px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .dash-card label { 
-            font-size: 0.65rem; 
-            color: var(--text-muted); 
-            display: block; 
-            margin-bottom: 4px; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-        }
-
-        .dash-card .value { 
-            font-size: 1.2rem; 
-            font-weight: 700; 
-        }
-
-        .dash-card.full .value { 
-            font-size: 1.5rem; 
-        }
-
-        .dash-card small { 
-            font-size: 0.65rem; 
-            opacity: 0.8; 
-            display: block;
-            margin-top: 4px;
-        }
-
-        .section-title { 
-            font-size: 0.75rem; 
-            font-weight: 700; 
-            margin: 12px 0 6px 0; 
-            color: var(--text-muted); 
-            text-transform: uppercase; 
-            letter-spacing: 1px;
-        }
-
-        .form-group {
-            background: var(--card);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin-bottom: 8px;
+        .input-group {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
             gap: 8px;
-        }
-
-        .form-group label { 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-            min-width: 50px;
-        }
-
-        .form-group input {
-            flex: 1;
-            min-width: 80px;
-            background: #0a0a0a;
-            border: 1px solid var(--border);
-            color: var(--text);
+            margin-bottom: 8px;
+            background: #1a1a1a;
             padding: 8px;
             border-radius: 6px;
-            text-align: right;
+            border: 1px solid #333;
+        }
+
+        .input-group label { 
+            min-width: 60px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group input {
+            flex: 1;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
             font-size: 1rem;
         }
 
-        .list-summary {
-            background: var(--card);
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            margin-bottom: 8px;
+        .list-header {
+            background: #1a1a1a;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid #ff4444;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             cursor: pointer;
+            margin-bottom: 6px;
             user-select: none;
         }
 
-        .list-summary.expense {
-            border-left: 3px solid var(--danger);
-        }
+        .list-header.income { border-left-color: #ffdd00; }
 
-        .list-summary.income {
-            border-left: 3px solid var(--success);
-        }
+        .list-header-label { font-size: 0.85rem; font-weight: 600; }
 
-        .list-summary label { 
-            font-size: 0.85rem; 
-            font-weight: 600; 
-        }
+        .list-header-value { font-size: 1rem; font-weight: 700; }
 
-        .list-summary .value { 
-            font-size: 1rem; 
-            font-weight: 700; 
-        }
-
-        .list-summary.collapsed ~ .dynamic-list {
-            display: none;
-        }
-
-        .dynamic-list {
-            background: #0a0a0a;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 8px;
-            margin-bottom: 8px;
+        .list-container {
             display: flex;
             flex-direction: column;
             gap: 6px;
+            margin-bottom: 8px;
+            background: #0a0a0a;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #333;
         }
 
-        .dynamic-row { 
-            display: flex; 
-            gap: 6px; 
-            background: var(--card);
-            padding: 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
+        .list-container.hidden { display: none; }
+
+        .list-item {
+            display: flex;
+            gap: 6px;
+            background: #1a1a1a;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid #333;
             align-items: center;
         }
 
-        .dynamic-row input[type="text"] { 
-            flex: 1;
-            min-width: 80px;
+        .list-item input {
             background: #0a0a0a;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px;
-            border-radius: 6px;
+            border: 1px solid #333;
+            color: #fff;
+            padding: 4px;
+            border-radius: 4px;
             font-size: 0.9rem;
         }
 
-        .dynamic-row input[type="number"] { 
-            width: 70px;
-            background: #0a0a0a;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px;
-            border-radius: 6px;
-            text-align: right;
-            font-size: 0.9rem;
-        }
+        .list-item input[type="text"] { flex: 1; min-width: 100px; }
+        .list-item input[type="number"] { width: 60px; }
 
-        .btn-del { 
-            background: var(--danger); 
-            border: none; 
-            color: white; 
-            border-radius: 6px; 
-            padding: 6px 8px; 
-            font-weight: bold; 
+        .delete-btn {
+            background: #ff4444;
+            border: none;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
             cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            font-size: 0.85rem;
-            flex-shrink: 0;
+            font-weight: bold;
+            font-size: 0.8rem;
         }
 
-        .btn-add {
+        .delete-btn:active { opacity: 0.8; }
+
+        .add-btn {
             width: 100%;
             padding: 8px;
             background: transparent;
-            border: 1px solid var(--text-muted);
-            color: var(--text-muted);
-            border-radius: 8px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            cursor: pointer;
-            -webkit-appearance: none;
-            appearance: none;
-            font-size: 0.9rem;
-        }
-
-        .back-home-btn {
-            position: fixed;
-            top: max(12px, var(--safe-top));
-            left: 12px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 12px;
+            border: 1px solid #555;
+            color: #888;
             border-radius: 6px;
-            font-size: 0.8rem;
             cursor: pointer;
-            z-index: 20;
-            -webkit-appearance: none;
-            appearance: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
         }
 
-        .back-home-btn.hidden {
-            display: none;
-        }
+        .add-btn:active { background: #1a1a1a; }
     </style>
 </head>
 <body>
 
-    <button class="back-home-btn hidden" id="back-home-btn" onclick="goHome()">← Ana</button>
+<!-- HOME SCREEN -->
+<div class="screen active" id="home">
+    <div class="home-title">HMC</div>
+    <div class="home-date" id="home-date">Bugün: --</div>
+    <button class="btn" onclick="showCurrent()">Mevcut Dönem</button>
+    <button class="btn" onclick="showMonths()">Geçmiş Dönem</button>
+</div>
 
-    <!-- HOME SCREEN -->
-    <div class="home-screen" id="home-screen">
-        <div class="header">
-            <h1>HMC</h1>
-            <div class="today" id="today-date">Bugün: --</div>
-        </div>
-        <button class="home-btn" onclick="showCurrentPeriod()">Mevcut Dönem</button>
-        <button class="home-btn" onclick="showPastMonths()">Geçmiş Dönem İncele</button>
+<!-- MONTH SELECT SCREEN -->
+<div class="screen" id="months">
+    <div style="text-align: center; padding: 10px; font-size: 1.1rem; font-weight: bold; margin-bottom: 10px;">Ay Seçin</div>
+    <div class="month-grid" id="month-grid"></div>
+    <button class="btn" onclick="goHome()" style="margin-top: 10px;">← Geri Dön</button>
+</div>
+
+<!-- PERIOD SCREEN -->
+<div class="screen" id="period">
+    <div class="header">
+        <div class="header-title" id="period-header">--</div>
+        <button class="back-btn" onclick="goHome()">← Ana</button>
     </div>
 
-    <!-- MONTH SELECTOR -->
-    <div class="month-selector hidden" id="month-selector">
-        <div style="text-align: center; padding: 12px; border-bottom: 1px solid var(--border);">
-            <h2 style="font-size: 1.1rem; margin-bottom: 4px;">Ay Seçin</h2>
-        </div>
-        <div class="month-grid" id="month-grid"></div>
-        <button class="back-btn" onclick="goHome()">← Geri Dön</button>
-    </div>
+    <div style="margin-top: 40px;">
+        <div class="period-title" id="period-name">--</div>
 
-    <!-- PERIODS CONTAINER -->
-    <div class="header hidden" id="header">
-        <h1>HMC</h1>
-        <div class="today" id="current-months">--</div>
-    </div>
-
-    <div class="container hidden" id="container">
-        <!-- Period 1 -->
-        <div class="period" id="period-1">
-            <div class="period-title" id="period-1-title">--</div>
-
-            <div class="dashboard">
-                <div class="dash-card full">
-                    <label>Kalan -</label>
-                    <div class="value" id="net-ex-1">₺0,00</div>
-                    <small id="daily-ex-1">Günlük: ₺0,00</small>
-                </div>
-                <div class="dash-card full">
-                    <label>Kalan +</label>
-                    <div class="value" style="color: var(--success)" id="net-inc-1">₺0,00</div>
-                    <small id="daily-inc-1">Günlük: ₺0,00</small>
-                </div>
-                <div class="dash-card full">
-                    <label>Kalan ++</label>
-                    <div class="value" style="color: var(--success)" id="net-bonus-1">₺0,00</div>
-                    <small id="daily-bonus-1">Günlük: ₺0,00</small>
-                </div>
+        <div class="dashboard">
+            <div class="dash-item">
+                <div class="dash-label">Kalan -</div>
+                <div class="dash-value" id="calc-ex">₺0,00</div>
+                <div class="dash-daily" id="daily-ex">Günlük: ₺0,00</div>
             </div>
-
-            <div class="section-title">Temel</div>
-            <div class="form-group"><label>Maaş</label><input type="number" id="salary-1" value="" oninput="calc(1)" placeholder="0"></div>
-            <div class="form-group"><label>Nakit</label><input type="number" id="cash-1" value="" oninput="calc(1)" placeholder="0"></div>
-            <div class="form-group"><label>Borç</label><input type="number" id="debt-1" value="" oninput="calc(1)" placeholder="0"></div>
-
-            <div class="section-title" style="color: var(--danger);">Giderler</div>
-            <div class="list-summary expense collapsed" id="exp-sum-1" onclick="toggle('expenses-1')">
-                <label>Giderler</label>
-                <div class="value" id="exp-total-1">₺0,00</div>
+            <div class="dash-item">
+                <div class="dash-label">Kalan +</div>
+                <div class="dash-value" style="color: #ffdd00;" id="calc-inc">₺0,00</div>
+                <div class="dash-daily" id="daily-inc">Günlük: ₺0,00</div>
             </div>
-            <div class="dynamic-list" id="expenses-1"></div>
-            <button class="btn-add" onclick="addRow('expenses-1', 1)">+ Ekle</button>
-
-            <div class="section-title" style="color: var(--danger);">Taksitler</div>
-            <div class="list-summary expense collapsed" id="inst-sum-1" onclick="toggle('installments-1')">
-                <label>Taksitler</label>
-                <div class="value" id="inst-total-1">₺0,00</div>
+            <div class="dash-item">
+                <div class="dash-label">Kalan ++</div>
+                <div class="dash-value" style="color: #ffdd00;" id="calc-bonus">₺0,00</div>
+                <div class="dash-daily" id="daily-bonus">Günlük: ₺0,00</div>
             </div>
-            <div class="dynamic-list" id="installments-1"></div>
-            <button class="btn-add" onclick="addRow('installments-1', 1)">+ Ekle</button>
-
-            <div class="section-title" style="color: var(--success);">Gelirler</div>
-            <div class="list-summary income collapsed" id="inc-sum-1" onclick="toggle('income-1')">
-                <label>Gelirler</label>
-                <div class="value" id="inc-total-1">₺0,00</div>
-            </div>
-            <div class="dynamic-list" id="income-1"></div>
-            <button class="btn-add" onclick="addRow('income-1', 1)">+ Ekle</button>
-
-            <div class="section-title" style="color: var(--success);">Bonus</div>
-            <div class="list-summary income collapsed" id="bonus-sum-1" onclick="toggle('bonus-1')">
-                <label>Bonus</label>
-                <div class="value" id="bonus-total-1">₺0,00</div>
-            </div>
-            <div class="dynamic-list" id="bonus-1"></div>
-            <button class="btn-add" onclick="addRow('bonus-1', 1)">+ Ekle</button>
         </div>
 
-        <!-- Period 2 -->
-        <div class="period" id="period-2">
-            <div class="period-title" id="period-2-title">--</div>
-
-            <div class="dashboard">
-                <div class="dash-card full">
-                    <label>Kalan -</label>
-                    <div class="value" id="net-ex-2">₺0,00</div>
-                    <small id="daily-ex-2">Günlük: ₺0,00</small>
-                </div>
-                <div class="dash-card full">
-                    <label>Kalan +</label>
-                    <div class="value" style="color: var(--success)" id="net-inc-2">₺0,00</div>
-                    <small id="daily-inc-2">Günlük: ₺0,00</small>
-                </div>
-                <div class="dash-card full">
-                    <label>Kalan ++</label>
-                    <div class="value" style="color: var(--success)" id="net-bonus-2">₺0,00</div>
-                    <small id="daily-bonus-2">Günlük: ₺0,00</small>
-                </div>
-            </div>
-
-            <div class="section-title">Temel</div>
-            <div class="form-group"><label>Maaş</label><input type="number" id="salary-2" value="" oninput="calc(2)" placeholder="0"></div>
-            <div class="form-group"><label>Nakit</label><input type="number" id="cash-2" value="" oninput="calc(2)" placeholder="0"></div>
-            <div class="form-group"><label>Borç</label><input type="number" id="debt-2" value="" oninput="calc(2)" placeholder="0"></div>
-
-            <div class="section-title" style="color: var(--danger);">Giderler</div>
-            <div class="list-summary expense collapsed" id="exp-sum-2" onclick="toggle('expenses-2')">
-                <label>Giderler</label>
-                <div class="value" id="exp-total-2">₺0,00</div>
-            </div>
-            <div class="dynamic-list" id="expenses-2"></div>
-            <button class="btn-add" onclick="addRow('expenses-2', 2)">+ Ekle</button>
-
-            <div class="section-title" style="color: var(--danger);">Taksitler</div>
-            <div class="list-summary expense collapsed" id="inst-sum-2" onclick="toggle('installments-2')">
-                <label>Taksitler</label>
-                <div class="value" id="inst-total-2">₺0,00</div>
-            </div>
-            <div class="dynamic-list" id="installments-2"></div>
-            <button class="btn-add" onclick="addRow('installments-2', 2)">+ Ekle</button>
-
-            <div class="section-title" style="color: var(--success);">Gelirler</div>
-            <div class="list-summary income collapsed" id="inc-sum-2" onclick="toggle('income-2')">
-                <label>Gelirler</label>
-                <div class="value" id="inc-total-2">₺0,00</div>
-            </div>
-            <div class="dynamic-list" id="income-2"></div>
-            <button class="btn-add" onclick="addRow('income-2', 2)">+ Ekle</button>
-
-            <div class="section-title" style="color: var(--success);">Bonus</div>
-            <div class="list-summary income collapsed" id="bonus-sum-2" onclick="toggle('bonus-2')">
-                <label>Bonus</label>
-                <div class="value" id="bonus-total-2">₺0,00</div>
-            </div>
-            <div class="dynamic-list" id="bonus-2"></div>
-            <button class="btn-add" onclick="addRow('bonus-2', 2)">+ Ekle</button>
+        <div class="section-title">Temel</div>
+        <div class="input-group">
+            <label>Maaş</label>
+            <input type="number" id="input-salary" placeholder="0" oninput="calculate()">
         </div>
-    </div>
+        <div class="input-group">
+            <label>Nakit</label>
+            <input type="number" id="input-cash" placeholder="0" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Borç</label>
+            <input type="number" id="input-debt" placeholder="0" oninput="calculate()">
+        </div>
 
-    <script>
-        const monthNames = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+        <div class="section-title">Giderler</div>
+        <div class="list-header" onclick="toggleList('expenses')">
+            <div class="list-header-label">Giderler</div>
+            <div class="list-header-value" id="total-expenses">₺0,00</div>
+        </div>
+        <div class="list-container hidden" id="expenses"></div>
+        <button class="add-btn" onclick="addItem('expenses')">+ Ekle</button>
+
+        <div class="section-title">Taksitler</div>
+        <div class="list-header" onclick="toggleList('installments')">
+            <div class="list-header-label">Taksitler</div>
+            <div class="list-header-value" id="total-installments">₺0,00</div>
+        </div>
+        <div class="list-container hidden" id="installments"></div>
+        <button class="add-btn" onclick="addItem('installments')">+ Ekle</button>
+
+        <div class="section-title">Gelirler</div>
+        <div class="list-header income" onclick="toggleList('income')">
+            <div class="list-header-label">Gelirler</div>
+            <div class="list-header-value" id="total-income">₺0,00</div>
+        </div>
+        <div class="list-container hidden" id="income"></div>
+        <button class="add-btn" onclick="addItem('income')">+ Ekle</button>
+
+        <div class="section-title">Bonus</div>
+        <div class="list-header income" onclick="toggleList('bonus')">
+            <div class="list-header-label">Bonus</div>
+            <div class="list-header-value" id="total-bonus">₺0,00</div>
+        </div>
+        <div class="list-container hidden" id="bonus"></div>
+        <button class="add-btn" onclick="addItem('bonus')">+ Ekle</button>
+    </div>
+</div>
+
+<script>
+    const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+    let curMonth = null;
+    let curYear = null;
+    let curPeriod = null;
+
+    function show(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function updateDate() {
+        const d = new Date();
+        const opt = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('home-date').textContent = `Bugün: ${d.toLocaleDateString('tr-TR', opt)}`;
+    }
+
+    function goHome() {
+        show('home');
+        curMonth = null;
+        curYear = null;
+        curPeriod = null;
+    }
+
+    function showCurrent() {
+        const d = new Date();
+        curMonth = d.getMonth();
+        curYear = d.getFullYear();
+        loadPeriod(1);
+    }
+
+    function showMonths() {
+        show('months');
+        let html = '';
+        for (let y = 2026; y <= new Date().getFullYear(); y++) {
+            const end = (y === new Date().getFullYear()) ? new Date().getMonth() : 11;
+            for (let m = end; m >= 0; m--) {
+                html += `<button class="month-btn" onclick="selectMonth(${m}, ${y})">${months[m]} ${y}</button>`;
+            }
+        }
+        document.getElementById('month-grid').innerHTML = html;
+    }
+
+    function selectMonth(m, y) {
+        curMonth = m;
+        curYear = y;
+        loadPeriod(1);
+    }
+
+    function loadPeriod(p) {
+        curPeriod = p;
+        show('period');
         
-        let selMonth = null;
-        let selYear = null;
+        const nextM = (curMonth + 1) % 12;
+        const name = `${months[curMonth]} (1-7) + ${months[nextM]} (8-${new Date(curYear, curMonth + 1, 0).getDate()})`;
+        document.getElementById('period-header').textContent = name;
+        document.getElementById('period-name').textContent = p === 1 ? months[curMonth] : months[nextM];
 
-        function formatCur(val) {
-            return val.toLocaleString('tr-TR', {minimumFractionDigits: 2});
-        }
+        clearForm();
+        loadData();
+        calculate();
+    }
 
-        function updateToday() {
-            const today = new Date();
-            const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('today-date').textContent = `Bugün: ${today.toLocaleDateString('tr-TR', opts)}`;
-        }
+    function getStorageKey() {
+        return `hmc_${curMonth}_${curYear}_${curPeriod}`;
+    }
 
-        function showCurrent() {
-            const today = new Date();
-            selMonth = today.getMonth();
-            selYear = today.getFullYear();
-            showPeriods();
-        }
+    function clearForm() {
+        document.getElementById('input-salary').value = '';
+        document.getElementById('input-cash').value = '';
+        document.getElementById('input-debt').value = '';
+        ['expenses', 'installments', 'income', 'bonus'].forEach(id => {
+            document.getElementById(id).innerHTML = '';
+        });
+    }
 
-        function showPastMonths() {
-            const home = document.getElementById('home-screen');
-            const sel = document.getElementById('month-selector');
-            home.classList.add('hidden');
-            sel.classList.remove('hidden');
+    function loadData() {
+        const key = getStorageKey();
+        const data = JSON.parse(localStorage.getItem(key) || '{}');
+        
+        document.getElementById('input-salary').value = data.salary || '';
+        document.getElementById('input-cash').value = data.cash || '';
+        document.getElementById('input-debt').value = data.debt || '';
 
-            let html = '';
-            for (let y = 2026; y <= new Date().getFullYear(); y++) {
-                const endM = (y === new Date().getFullYear()) ? new Date().getMonth() : 11;
-                for (let m = endM; m >= 0; m--) {
-                    html += `<button class="month-btn" onclick="selMonthFn(${m}, ${y})">${monthNames[m]} ${y}</button>`;
-                }
+        ['expenses', 'installments', 'income', 'bonus'].forEach(type => {
+            if (data[type]) {
+                data[type].forEach(item => addItem(type, item.name, item.val));
             }
-            document.getElementById('month-grid').innerHTML = html;
-        }
+        });
+    }
 
-        function selMonthFn(m, y) {
-            selMonth = m;
-            selYear = y;
-            showPeriods();
-        }
+    function saveData() {
+        const key = getStorageKey();
+        const obj = {
+            salary: document.getElementById('input-salary').value || '',
+            cash: document.getElementById('input-cash').value || '',
+            debt: document.getElementById('input-debt').value || ''
+        };
 
-        function showPeriods() {
-            document.getElementById('home-screen').classList.add('hidden');
-            document.getElementById('month-selector').classList.add('hidden');
-            document.getElementById('header').classList.remove('hidden');
-            document.getElementById('container').classList.remove('hidden');
-            document.getElementById('back-home-btn').classList.remove('hidden');
-
-            const lastDay = new Date(selYear, selMonth + 1, 0).getDate();
-            document.getElementById('current-months').textContent = `${monthNames[selMonth]} + ${monthNames[(selMonth + 1) % 12]}`;
-            document.getElementById('period-1-title').textContent = monthNames[selMonth];
-            document.getElementById('period-2-title').textContent = monthNames[(selMonth + 1) % 12];
-
-            load();
-            calc(1);
-            calc(2);
-        }
-
-        function goHome() {
-            document.getElementById('home-screen').classList.remove('hidden');
-            document.getElementById('month-selector').classList.add('hidden');
-            document.getElementById('header').classList.add('hidden');
-            document.getElementById('container').classList.add('hidden');
-            document.getElementById('back-home-btn').classList.add('hidden');
-            selMonth = null;
-            selYear = null;
-        }
-
-        function toggle(listId) {
-            const sum = document.getElementById(listId.replace('expenses', 'exp-sum').replace('installments', 'inst-sum').replace('income', 'inc-sum').replace('bonus', 'bonus-sum'));
-            sum.classList.toggle('collapsed');
-        }
-
-        function addRow(listId, p) {
-            const list = document.getElementById(listId);
-            const div = document.createElement('div');
-            div.className = 'dynamic-row';
-            div.innerHTML = `
-                <input type="text" placeholder="Açıkla" value="" class="name" oninput="calc(${p})">
-                <input type="number" placeholder="₺" value="" class="val" min="0" step="0.01" oninput="calc(${p})">
-                <button class="btn-del" onclick="this.parentElement.remove(); calc(${p})">✕</button>
-            `;
-            list.appendChild(div);
-            calc(p);
-        }
-
-        function getTotal(listId) {
-            let sum = 0;
-            document.querySelectorAll(`#${listId} .val`).forEach(inp => {
-                sum += parseFloat(inp.value) || 0;
+        ['expenses', 'installments', 'income', 'bonus'].forEach(type => {
+            obj[type] = [];
+            document.querySelectorAll(`#${type} .list-item`).forEach(item => {
+                const name = item.querySelector('input[type="text"]').value.trim();
+                const val = item.querySelector('input[type="number"]').value.trim();
+                if (name && val) obj[type].push({name, val});
             });
-            return sum;
+        });
+
+        localStorage.setItem(key, JSON.stringify(obj));
+    }
+
+    function addItem(type, name = '', val = '') {
+        const cont = document.getElementById(type);
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = `
+            <input type="text" value="${name}" placeholder="Açıkla" class="item-name" oninput="calculate()">
+            <input type="number" value="${val}" placeholder="0" class="item-val" min="0" step="0.01" oninput="calculate()">
+            <button class="delete-btn" onclick="this.parentElement.remove(); calculate();">✕</button>
+        `;
+        cont.appendChild(div);
+        calculate();
+    }
+
+    function toggleList(type) {
+        const cont = document.getElementById(type);
+        cont.classList.toggle('hidden');
+    }
+
+    function getTotal(type) {
+        let sum = 0;
+        document.querySelectorAll(`#${type} .item-val`).forEach(inp => {
+            sum += parseFloat(inp.value) || 0;
+        });
+        return sum;
+    }
+
+    function getDaysLeft() {
+        const d = new Date();
+        const day = d.getDate();
+        const m = d.getMonth();
+        const y = d.getFullYear();
+        const isCur = (m === curMonth && y === curYear);
+        const lastDay = new Date(curYear, curMonth + 1, 0).getDate();
+
+        if (curPeriod === 1) {
+            if (isCur && day <= 7) return 8 - day;
+            if (!isCur && (m < curMonth || y < curYear)) return 0;
+            return 7;
+        } else {
+            if (isCur && day >= 8) return lastDay - day + 1;
+            if (!isCur && (m < curMonth || y < curYear)) return 0;
+            return lastDay - 7;
         }
+    }
 
-        function getData(listId) {
-            const arr = [];
-            document.querySelectorAll(`#${listId} .dynamic-row`).forEach(row => {
-                const name = row.querySelector('.name').value.trim();
-                const val = row.querySelector('.val').value.trim();
-                if (name && val) arr.push({name, val});
-            });
-            return arr;
-        }
+    function calculate() {
+        const salary = parseFloat(document.getElementById('input-salary').value) || 0;
+        const cash = parseFloat(document.getElementById('input-cash').value) || 0;
+        const debt = parseFloat(document.getElementById('input-debt').value) || 0;
 
-        function save() {
-            if (selMonth === null) return;
-            for (let p = 1; p <= 2; p++) {
-                const key = `hmc_${selMonth}_${selYear}_${p}`;
-                const obj = {
-                    salary: document.getElementById(`salary-${p}`).value || '',
-                    cash: document.getElementById(`cash-${p}`).value || '',
-                    debt: document.getElementById(`debt-${p}`).value || '',
-                    expenses: getData(`expenses-${p}`),
-                    installments: getData(`installments-${p}`),
-                    income: getData(`income-${p}`),
-                    bonus: getData(`bonus-${p}`)
-                };
-                localStorage.setItem(key, JSON.stringify(obj));
-            }
-        }
+        const exp = getTotal('expenses');
+        const inst = getTotal('installments');
+        const inc = getTotal('income');
+        const bon = getTotal('bonus');
 
-        function load() {
-            if (selMonth === null) return;
-            for (let p = 1; p <= 2; p++) {
-                document.getElementById(`salary-${p}`).value = '';
-                document.getElementById(`cash-${p}`).value = '';
-                document.getElementById(`debt-${p}`).value = '';
-                document.getElementById(`expenses-${p}`).innerHTML = '';
-                document.getElementById(`installments-${p}`).innerHTML = '';
-                document.getElementById(`income-${p}`).innerHTML = '';
-                document.getElementById(`bonus-${p}`).innerHTML = '';
+        const netEx = salary + cash - exp - inst - debt;
+        const netInc = netEx + inc;
+        const netBon = netInc + bon;
 
-                const key = `hmc_${selMonth}_${selYear}_${p}`;
-                const data = JSON.parse(localStorage.getItem(key) || '{}');
+        const days = getDaysLeft();
+        const dailyEx = days > 0 ? netEx / days : 0;
+        const dailyInc = days > 0 ? netInc / days : 0;
+        const dailyBon = days > 0 ? netBon / days : 0;
 
-                document.getElementById(`salary-${p}`).value = data.salary || '';
-                document.getElementById(`cash-${p}`).value = data.cash || '';
-                document.getElementById(`debt-${p}`).value = data.debt || '';
+        document.getElementById('total-expenses').textContent = `₺${exp.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+        document.getElementById('total-installments').textContent = `₺${inst.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+        document.getElementById('total-income').textContent = `₺${inc.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+        document.getElementById('total-bonus').textContent = `₺${bon.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
 
-                if (data.expenses) {
-                    data.expenses.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'dynamic-row';
-                        div.innerHTML = `
-                            <input type="text" placeholder="Açıkla" value="${item.name}" class="name" oninput="calc(${p})">
-                            <input type="number" placeholder="₺" value="${item.val}" class="val" min="0" step="0.01" oninput="calc(${p})">
-                            <button class="btn-del" onclick="this.parentElement.remove(); calc(${p})">✕</button>
-                        `;
-                        document.getElementById(`expenses-${p}`).appendChild(div);
-                    });
-                }
+        document.getElementById('calc-ex').textContent = `₺${netEx.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+        document.getElementById('calc-inc').textContent = `₺${netInc.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+        document.getElementById('calc-bonus').textContent = `₺${netBon.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
 
-                if (data.installments) {
-                    data.installments.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'dynamic-row';
-                        div.innerHTML = `
-                            <input type="text" placeholder="Açıkla" value="${item.name}" class="name" oninput="calc(${p})">
-                            <input type="number" placeholder="₺" value="${item.val}" class="val" min="0" step="0.01" oninput="calc(${p})">
-                            <button class="btn-del" onclick="this.parentElement.remove(); calc(${p})">✕</button>
-                        `;
-                        document.getElementById(`installments-${p}`).appendChild(div);
-                    });
-                }
+        document.getElementById('daily-ex').textContent = `Günlük: ₺${dailyEx.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+        document.getElementById('daily-inc').textContent = `Günlük: ₺${dailyInc.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
+        document.getElementById('daily-bonus').textContent = `Günlük: ₺${dailyBon.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`;
 
-                if (data.income) {
-                    data.income.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'dynamic-row';
-                        div.innerHTML = `
-                            <input type="text" placeholder="Açıkla" value="${item.name}" class="name" oninput="calc(${p})">
-                            <input type="number" placeholder="₺" value="${item.val}" class="val" min="0" step="0.01" oninput="calc(${p})">
-                            <button class="btn-del" onclick="this.parentElement.remove(); calc(${p})">✕</button>
-                        `;
-                        document.getElementById(`income-${p}`).appendChild(div);
-                    });
-                }
+        saveData();
+    }
 
-                if (data.bonus) {
-                    data.bonus.forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = 'dynamic-row';
-                        div.innerHTML = `
-                            <input type="text" placeholder="Açıkla" value="${item.name}" class="name" oninput="calc(${p})">
-                            <input type="number" placeholder="₺" value="${item.val}" class="val" min="0" step="0.01" oninput="calc(${p})">
-                            <button class="btn-del" onclick="this.parentElement.remove(); calc(${p})">✕</button>
-                        `;
-                        document.getElementById(`bonus-${p}`).appendChild(div);
-                    });
-                }
-            }
-        }
+    updateDate();
+</script>
 
-        function getDaysLeft(p) {
-            const today = new Date();
-            const day = today.getDate();
-            const month = today.getMonth();
-            const year = today.getFullYear();
-            const isCur = month === selMonth && year === selYear;
-            const lastDay = new Date(selYear, selMonth + 1, 0).getDate();
-
-            if (p === 1) {
-                if (isCur && day <= 7) return 8 - day;
-                if (!isCur && (month < selMonth || year < selYear)) return 0;
-                return 7;
-            } else {
-                if (isCur && day >= 8) return lastDay - day + 1;
-                if (!isCur && (month < selMonth || year < selYear)) return 0;
-                return lastDay - 7;
-            }
-        }
-
-        function calc(p) {
-            const salary = parseFloat(document.getElementById(`salary-${p}`).value) || 0;
-            const cash = parseFloat(document.getElementById(`cash-${p}`).value) || 0;
-            const debt = parseFloat(document.getElementById(`debt-${p}`).value) || 0;
-
-            const exp = getTotal(`expenses-${p}`);
-            const inst = getTotal(`installments-${p}`);
-            const inc = getTotal(`income-${p}`);
-            const bon = getTotal(`bonus-${p}`);
-
-            const netEx = salary + cash - exp - inst - debt;
-            const netInc = netEx + inc;
-            const netBon = netInc + bon;
-
-            const days = getDaysLeft(p);
-            const dailyEx = days > 0 ? netEx / days : 0;
-            const dailyInc = days > 0 ? netInc / days : 0;
-            const dailyBon = days > 0 ? netBon / days : 0;
-
-            document.getElementById(`exp-total-${p}`).textContent = `₺${formatCur(exp)}`;
-            document.getElementById(`inst-total-${p}`).textContent = `₺${formatCur(inst)}`;
-            document.getElementById(`inc-total-${p}`).textContent = `₺${formatCur(inc)}`;
-            document.getElementById(`bonus-total-${p}`).textContent = `₺${formatCur(bon)}`;
-
-            document.getElementById(`net-ex-${p}`).textContent = `₺${formatCur(netEx)}`;
-            document.getElementById(`net-inc-${p}`).textContent = `₺${formatCur(netInc)}`;
-            document.getElementById(`net-bonus-${p}`).textContent = `₺${formatCur(netBon)}`;
-
-            document.getElementById(`daily-ex-${p}`).textContent = `Günlük: ₺${formatCur(dailyEx)}`;
-            document.getElementById(`daily-inc-${p}`).textContent = `Günlük: ₺${formatCur(dailyInc)}`;
-            document.getElementById(`daily-bonus-${p}`).textContent = `Günlük: ₺${formatCur(dailyBon)}`;
-
-            save();
-        }
-
-        updateToday();
-    </script>
 </body>
 </html>
