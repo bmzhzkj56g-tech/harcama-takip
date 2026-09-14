@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Harcama Takip">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect fill='%233b82f6' width='192' height='192'/><text x='50%' y='50%' font-size='100' fill='white' text-anchor='middle' dominant-baseline='middle'>₺</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%233b82f6' width='180' height='180' rx='40'/><text x='50%' y='50%' font-size='90' fill='white' text-anchor='middle' dominant-baseline='middle'>₺</text></svg>">
+    <link rel="manifest" href="manifest.json">
+    <title>Harcama Takip V3</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --danger: #ef4444;
+            --success: #10b981;
+            --border: #334155;
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        html, body { width: 100%; height: 100%; -webkit-user-select: none; user-select: none; }
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            padding: 16px; 
+            padding-top: max(16px, var(--safe-top));
+            padding-bottom: max(16px, var(--safe-bottom));
+            max-width: 500px; 
+            margin: 0 auto; 
+            overflow-y: auto;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dash-card {
+            background: var(--card);
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .dash-card.full { 
+            grid-column: span 2; 
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+        }
+        .dash-card label { font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px; }
+        .dash-card.full label { color: #dbeafe; }
+        .dash-card .value { font-size: 1.2rem; font-weight: 700; }
+        .dash-card.full .value { font-size: 1.8rem; }
+
+        .section-title { font-size: 0.9rem; font-weight: 600; margin: 16px 0 8px 0; color: var(--text-muted); text-transform: uppercase; }
+
+        .form-group {
+            background: var(--card);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group label { font-size: 0.9rem; width: 40%; }
+        .form-group input {
+            width: 55%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 8px;
+            border-radius: 6px;
+            text-align: right;
+            font-size: 1rem;
+        }
+
+        .dynamic-row { display: flex; gap: 8px; margin-bottom: 8px; }
+        .dynamic-row input[type="text"] { flex: 2; }
+        .dynamic-row input[type="number"] { flex: 1; }
+        .btn-del { 
+            background: var(--danger); 
+            border: none; 
+            color: white; 
+            border-radius: 6px; 
+            padding: 0 10px; 
+            font-weight: bold; 
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .btn-add {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px dashed var(--accent);
+            color: var(--accent);
+            border-radius: 8px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            cursor: pointer;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .install-banner {
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .install-banner.show { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="install-banner" id="install-banner">
+        📱 <strong>Ana ekrana ekle</strong> için Safari'de: Paylaş → Ana Ekrana Ekle
+    </div>
+
+    <div class="header">
+        <h1>📱 Harcama Takip V3</h1>
+    </div>
+
+    <!-- Özet Paneli -->
+    <div class="dashboard">
+        <div class="dash-card full">
+            <label>GÜNLÜK HARCAMA LİMİTİ (28'ine Kadar)</label>
+            <div class="value" id="daily-limit">₺0,00</div>
+            <small style="font-size: 0.75rem; opacity: 0.9;" id="days-left">Kalan Gün: 0</small>
+        </div>
+        <div class="dash-card">
+            <label>Ek Gelir Hariç</label>
+            <div class="value" id="net-ex-extra">₺0,00</div>
+        </div>
+        <div class="dash-card">
+            <label>Ek Gelir Dahil</label>
+            <div class="value" style="color: var(--success)" id="net-inc-extra">₺0,00</div>
+        </div>
+    </div>
+
+    <!-- Sabit Bütçe Kalemleri -->
+    <div class="section-title">Temel Bakiye & Borçlar</div>
+    <div class="form-group"><label>Maaş</label><input type="number" id="salary" value="0" oninput="calculate()"></div>
+    <div class="form-group"><label>Nakit Para</label><input type="number" id="cash" value="0" oninput="calculate()"></div>
+    <div class="form-group"><label>Kart Borcu</label><input type="number" id="card-debt" value="0" oninput="calculate()"></div>
+
+    <!-- Sınırsız Kalemler -->
+    <div class="section-title">Sabit Giderler</div>
+    <div id="fixed-expenses-list"></div>
+    <button class="btn-add" onclick="addRow('fixed-expenses-list')">+ Sabit Gider Ekle</button>
+
+    <div class="section-title">Taksitler</div>
+    <div id="installments-list"></div>
+    <button class="btn-add" onclick="addRow('installments-list')">+ Taksit Ekle</button>
+
+    <div class="section-title">Ek Gelirler</div>
+    <div id="extra-income-list"></div>
+    <button class="btn-add" onclick="addRow('extra-income-list')">+ Ek Gelir Ekle</button>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('install-banner').classList.add('show');
+        });
+
+        function getDaysUntil28th() {
+            const today = new Date();
+            const currentDay = today.getDate();
+            let targetDate = new Date(today.getFullYear(), today.getMonth(), 28);
+
+            if (currentDay > 28) {
+                targetDate = new Date(today.getFullYear(), today.getMonth() + 1, 28);
+            }
+
+            const diffTime = targetDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+            return diffDays > 0 ? diffDays : 1;
+        }
+
+        function addRow(containerId, name = '', value = '') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'dynamic-row';
+            div.innerHTML = `
+                <input type="text" placeholder="Açıklama" value="${name}" class="row-name" oninput="calculate()">
+                <input type="number" placeholder="Tutar" value="${value}" min="0" step="0.01" class="row-val" oninput="calculate()">
+                <button class="btn-del" onclick="this.parentElement.remove(); calculate();">✕</button>
+            `;
+            container.appendChild(div);
+            calculate();
+        }
+
+        function getListTotal(containerId) {
+            let total = 0;
+            document.querySelectorAll(`#${containerId} .row-val`).forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            return total;
+        }
+
+        function getListData(containerId) {
+            const data = [];
+            document.querySelectorAll(`#${containerId} .dynamic-row`).forEach(row => {
+                const name = row.querySelector('.row-name').value.trim();
+                const val = row.querySelector('.row-val').value.trim();
+                if (name && val) {
+                    data.push({ name, val });
+                }
+            });
+            return data;
+        }
+
+        function saveData() {
+            const state = {
+                salary: document.getElementById('salary').value,
+                cash: document.getElementById('cash').value,
+                cardDebt: document.getElementById('card-debt').value,
+                fixedExpenses: getListData('fixed-expenses-list'),
+                installments: getListData('installments-list'),
+                extraIncome: getListData('extra-income-list')
+            };
+            localStorage.setItem('budget_v3_data', JSON.stringify(state));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('budget_v3_data');
+            if (!saved) return;
+
+            const state = JSON.parse(saved);
+
+            document.getElementById('salary').value = state.salary || 0;
+            document.getElementById('cash').value = state.cash || 0;
+            document.getElementById('card-debt').value = state.cardDebt || 0;
+
+            if (state.fixedExpenses) {
+                state.fixedExpenses.forEach(item => addRow('fixed-expenses-list', item.name, item.val));
+            }
+            if (state.installments) {
+                state.installments.forEach(item => addRow('installments-list', item.name, item.val));
+            }
+            if (state.extraIncome) {
+                state.extraIncome.forEach(item => addRow('extra-income-list', item.name, item.val));
+            }
+        }
+
+        function calculate() {
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const cash = parseFloat(document.getElementById('cash').value) || 0;
+            const cardDebt = parseFloat(document.getElementById('card-debt').value) || 0;
+
+            const fixedExpenses = getListTotal('fixed-expenses-list');
+            const installments = getListTotal('installments-list');
+            const extraIncome = getListTotal('extra-income-list');
+
+            const netExExtra = salary + cash - fixedExpenses - installments - cardDebt;
+            const netIncExtra = netExExtra + extraIncome;
+
+            const daysLeft = getDaysUntil28th();
+            const dailyLimit = netIncExtra / daysLeft;
+
+            document.getElementById('net-ex-extra').textContent = `₺${netExExtra.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`.replace(/,/g, ',');
+            document.getElementById('net-inc-extra').textContent = `₺${netIncExtra.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`.replace(/,/g, ',');
+            document.getElementById('daily-limit').textContent = `₺${dailyLimit.toLocaleString('tr-TR', {minimumFractionDigits: 2})}`.replace(/,/g, ',');
+            document.getElementById('days-left').textContent = `Ayın 28'ine kalan gün: ${daysLeft}`;
+
+            saveData();
+        }
+
+        loadData();
+        calculate();
+    </script>
+</body>
+</html>
